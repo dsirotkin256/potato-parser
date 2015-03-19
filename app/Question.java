@@ -1,19 +1,14 @@
 package app;
 
-public class Question implements Comparable<Object> {
+public class Question implements Comparable<Question> {
 	
 	private String questionNumber;
 	private String docName;
 	private String link;
 	private String question;
 	private String answer;
-
 	
-	public Question() {
-		
-	
-		
-	}
+	public Question() { }
 	
 	public void setDocName(String docName) {
 		this.docName = docName;
@@ -22,8 +17,6 @@ public class Question implements Comparable<Object> {
 	public String getDocName() {
 		return docName;
 	}
-	
-	
 	
 	public void setAnswer(String answer) {
 		this.answer = answer;
@@ -34,7 +27,7 @@ public class Question implements Comparable<Object> {
 	}
 	
 	public String getQuestion() {
-		return this.question;
+		return question;
 	}
 	
 	public void setQuestion(String question) {
@@ -57,19 +50,8 @@ public class Question implements Comparable<Object> {
 		this.link = link;
 	}
 
-    @Override
-    public int compareTo(Object o) {
-        
-        if (o.toString() == this.getQuestion()) {
-            return 0;
-        }
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-	
-
-	
-	
+	@Override
+	public int compareTo(Question o) {
+		return question.compareTo(o.question);
+	}
 }
