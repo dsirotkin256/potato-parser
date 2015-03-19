@@ -16,10 +16,12 @@ import java.net.URISyntaxException;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.ForkJoinTask;
 import java.util.regex.Pattern;
-
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -134,19 +136,19 @@ public class Root extends LinkedList <QuestionDoc> {
 			Runtime.getRuntime().exit(1);
 		}
 		
-		LinkedList <Question> questions = new LinkedList<>();
+		HashSet <Question> questions = new HashSet<>();
 		
 		root.forEach(questionDocument -> {
 			
-			questionDocument.forEach(question -> { 
-				
+			questionDocument.forEach(question -> {
 				questions.add(question);
-			
 			});
-				
 		});
+                
+                LinkedList<Question> sortedQuestion = new LinkedList<>();
+                sortedQuestion.addAll(questions);
 		
-		render = new TableRender(ui.table, questions);
+		render = new TableRender(ui.table, sortedQuestion);
 		
 		searchBox.addKeyListener(new KeyAdapter() {
 			@Override
@@ -156,7 +158,7 @@ public class Root extends LinkedList <QuestionDoc> {
 					
 					if (searchBox.getText().isEmpty()) {
 						
-						render = new TableRender(ui.table, questions);
+						render = new TableRender(ui.table, sortedQuestion);
 						
 						//refresh all documents
 						
@@ -170,7 +172,7 @@ public class Root extends LinkedList <QuestionDoc> {
 						
 						root.forEach(doc -> {
 							
-							doc.forEach(question -> {
+							sortedQuestion.forEach(question -> {
 								
 								boolean isValid = 
 										Pattern.compile(".*"+creteria+".*", Pattern.CASE_INSENSITIVE)

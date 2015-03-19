@@ -1,6 +1,6 @@
 package app;
 
-public class Question {
+public class Question implements Comparable<Object> {
 	
 	private String questionNumber;
 	private String docName;
@@ -56,6 +56,16 @@ public class Question {
 	public void setLink(String link) {
 		this.link = link;
 	}
+
+    @Override
+    public int compareTo(Object o) {
+        
+        if (o.toString() == this.getQuestion()) {
+            return 0;
+        }
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 
 	
