@@ -1,7 +1,6 @@
 package app;
 
 import java.util.LinkedList;
-
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
@@ -10,16 +9,21 @@ import javax.swing.table.AbstractTableModel;
 
 public class TableRender extends AbstractTableModel {
 
-    SharedSelectionListener listener = new SharedSelectionListener();
+    static LinkedList<Question> questions;
+    static LinkedList<Object[]> tableQuestions;
+
+    static {
+        questions = new LinkedList<>();
+        tableQuestions = new LinkedList<>();
+    }
+
+    SharedSelectionListener listener;
 
     private int questionRow = -1;
 
     private static Question question;
 
-    String[] sourceColNames = {"Документ", "№", "Вопрос", "Ссылка"};
-
-    static LinkedList<Question> questions = new LinkedList<>();
-    static LinkedList<Object[]> tableQuestions = new LinkedList<>();
+    String[] sourceColNames = {"№", "Вопрос"};
 
     JTable table;
     static JEditorPane answerPreview;
@@ -48,10 +52,9 @@ public class TableRender extends AbstractTableModel {
         return tableQuestions.get(rowIndex)[columnIndex];
     }
 
-    public Object[] rend(Question question) {
+    public Object[] rend(int n, Question question) {
 
-        Object[] s = {question.getDocName(), question.getQuestionNumber(),
-            question.getQuestion(), question.getLink()};
+        Object[] s = {n + 1, question.getQuestion()};
 
         return s;
     }
@@ -63,9 +66,9 @@ public class TableRender extends AbstractTableModel {
         this.tableQuestions = new LinkedList<>();
         this.questions = questions;
 
-		// add sources to the table
+        // add sources to the table
         questions.forEach(question -> {
-            tableQuestions.add(rend(question));
+            tableQuestions.add(rend(tableQuestions.size(), question));
         });
 
         table.setModel(this);
@@ -74,13 +77,10 @@ public class TableRender extends AbstractTableModel {
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
-        table.getColumnModel().getColumn(0).setMinWidth(100);
-        table.getColumnModel().getColumn(1).setWidth(35);
-        table.getColumnModel().getColumn(1).setMinWidth(35);
-        table.getColumnModel().getColumn(1).setMaxWidth(35);
-        table.getColumnModel().getColumn(2).setMinWidth(600);
+        table.getColumnModel().getColumn(0).setWidth(45);
+        table.getColumnModel().getColumn(0).setMinWidth(45);
+        table.getColumnModel().getColumn(0).setMaxWidth(45);
 
-        table.getSelectionModel().removeListSelectionListener(listener);
         listener = new SharedSelectionListener();
         table.getSelectionModel().addListSelectionListener(listener);
 
@@ -96,15 +96,12 @@ public class TableRender extends AbstractTableModel {
             if (questionRow != -1) {
 
                 try {
-
                     question = questions.get(questionRow);
-                    table.setToolTipText(question.getQuestion());
-                    Root.setPreview(question.getAnswer());
+                    question.setPreview();
 
                 } catch (IndexOutOfBoundsException ex) {
                     return;
                 }
-
             }
 
         }

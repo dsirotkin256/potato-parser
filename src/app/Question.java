@@ -8,9 +8,6 @@ public class Question implements Comparable<Question> {
     private String question;
     private String answer;
 
-    public Question() {
-    }
-
     public void setDocName(String docName) {
         this.docName = docName;
     }
@@ -28,7 +25,7 @@ public class Question implements Comparable<Question> {
     }
 
     public String getQuestion() {
-        return question;
+        return this.question;
     }
 
     public void setQuestion(String question) {
@@ -51,8 +48,24 @@ public class Question implements Comparable<Question> {
         this.link = link;
     }
 
-    @Override
-    public int compareTo(Question o) {
-        return question.compareTo(o.question);
+    public void setPreview() {
+
+        final String questionHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getQuestion() + "</font><br><br><br><font size=\"3\" face=\"verdana\">Документ: <i>" + getDocName() + "</i><br>Вопрос <i>№" + getQuestionNumber() + "</i></font></body></html>";
+
+        final String answerHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getAnswer() + "</font><body></html>";
+
+        Root.questionPane.setText(questionHTML);
+        Root.answerPane.setText(answerHTML);
+
+        Root.questionPane.setCaretPosition(0);
+        Root.answerPane.setCaretPosition(0);
     }
+
+    @Override
+    public int compareTo(Question question) {
+
+        return getQuestion().compareTo(question.getQuestion());
+
+    }
+
 }
