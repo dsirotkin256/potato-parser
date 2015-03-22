@@ -10,13 +10,12 @@ import java.util.regex.Pattern;
 public class QuestionDocument extends Document implements Comparable<QuestionDocument> {
 
     private AnswerDocument answerDocument;
+    private TreeSet<Question> questions;
 
     public QuestionDocument(String path) throws IOException {
         super(path);
         questions = new TreeSet<>();
     }
-
-    private TreeSet<Question> questions;
 
     public TreeSet<Question> getQuestions() {
         return questions;
@@ -27,6 +26,7 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
     }
 
     public void extractQuestions() {
+        questions.clear();
 
         String regex = "^(?<qn>\\d+)[ \\t]+"
                 + "(?<Link>[^ \\t]+ (?:\\d+ )?[^ \\t]+?)(?=[\u0410-\u042F] |[\u0410-\u042F][\u0430-\u044F])"
@@ -108,7 +108,9 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
             }
         }
 
-        return Pattern.compile(regex + ".+(\n|\n\r)?.*", Pattern.MULTILINE);
+        regex += ".+(\n|\n\r)?.*";
+
+        return Pattern.compile(regex, Pattern.MULTILINE);
 
     }
 

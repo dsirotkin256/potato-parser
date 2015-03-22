@@ -18,16 +18,29 @@ import javax.swing.border.EmptyBorder;
 
 public class UI extends JFrame {
 
-    private JPanel contentPane;
+    public final static UI instance = getInstance();
+
+    private static class Helper {
+
+        public final static UI ui = new UI();
+    }
+
+    private static UI getInstance() {
+        return Helper.ui;
+    }
+
     public JTextField searchBox;
     public JEditorPane answerPane, questionPane;
     public JTable table;
-    private JScrollPane answerScrollPane, questionScrollPane;
     public JLabel lblSearch;
+
+    private JPanel contentPane;
+    private JScrollPane answerScrollPane, questionScrollPane;
     private JLabel label_1;
 
-    public UI() {
+    private UI() {
 
+        setLocationRelativeTo(null);
         setTitle("ReineSoft inc.");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1074, 635);
@@ -52,6 +65,8 @@ public class UI extends JFrame {
         table = new JTable();
         table.setFont(new Font("Tahoma", Font.PLAIN, 13));
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
         scrollPane.setViewportView(table);
 

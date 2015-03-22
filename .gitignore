@@ -1,6 +1,8 @@
 
 /nbproject
 /build
+dist/bundles/
+dist/README.TXT
 
 build.xml
 manifest.mf

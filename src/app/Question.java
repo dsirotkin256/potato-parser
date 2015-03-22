@@ -54,11 +54,11 @@ public class Question implements Comparable<Question> {
 
         final String answerHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getAnswer() + "</font><body></html>";
 
-        Root.questionPane.setText(questionHTML);
-        Root.answerPane.setText(answerHTML);
+        App.ui.questionPane.setText(questionHTML);
+        App.ui.answerPane.setText(answerHTML);
 
-        Root.questionPane.setCaretPosition(0);
-        Root.answerPane.setCaretPosition(0);
+        App.ui.questionPane.setCaretPosition(0);
+        App.ui.answerPane.setCaretPosition(0);
     }
 
     @Override

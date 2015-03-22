@@ -15,10 +15,7 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -26,99 +23,47 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 public class Root extends TreeSet<QuestionDocument> {
 
     static {
-
         Locale russian = new Locale("ru");
         Locale.setDefault(russian);
-
-        ui = new UI();
-        root = new Root();
-
     }
 
-    static File directory;
+    public Root(File directory) {
+        questions = new TreeSet<>();
+        setFiles(directory);
+        App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter());
+    }
 
-    static JTextField searchBox;
-
-    static JEditorPane answerPane, questionPane;
-    static TableRender render;
+    private File directory;
+    private ArrayList<File> documents;
+    private volatile TreeSet<Question> questions;
 
     private static int current = 0;
-    private static Double average = 0.00D;
 
-    private static Root root;
-    private static UI ui;
-
-    private static boolean dontDisturbMode = false;
+    private volatile static mode dontDisturbMode = mode.OFF;
 
     /*
      * Prompt user to choose directory with Documents
      */
-    private static Collection<File> getFiles() {
+    private void setFiles(File directory) {
+        this.directory = directory;
 
-        JFileChooser dir = new JFileChooser(System.getProperty("user.home") + "\\Desktop");
-
-        dir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        dir.setApproveButtonText("Выбрать папку");
-        dir.setDialogTitle("Выберите папку с документами НАКС");
-
-        int result = dir.showOpenDialog(ui);
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-
-            directory = dir.getSelectedFile();
-
-            return FileUtils.listFiles(directory,
+        try {
+            documents = new ArrayList<>(FileUtils.listFiles(directory,
                     new RegexFileFilter(".+(?<!_о).doc"),
-                    DirectoryFileFilter.DIRECTORY);
+                    DirectoryFileFilter.DIRECTORY));
+        } catch (IllegalArgumentException ex) {
 
-        } else {
+            JOptionPane.showMessageDialog(App.ui,
+                    "Данной папки не существует.",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE);
 
-            // IF operation was canceled
             Runtime.getRuntime().exit(1);
 
         }
+        if (documents.isEmpty()) {
 
-        return null;
-    }
-
-    public static void main(String[] args) {
-
-        ui.setLocationRelativeTo(null);
-
-        answerPane = ui.answerPane;
-        questionPane = ui.questionPane;
-        searchBox = ui.searchBox;
-
-        searchBox.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-
-                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (searchBox.getText().isEmpty()) {
-                        // Fullfill table with questions from root derectory
-                        render = new TableRender(ui.table, extractQuestions(root));
-                        ui.lblSearch.setText("");
-                        dontDisturbMode = false;
-                    } else {
-                        //Interrupt table updates by switching on this mode
-                        dontDisturbMode = true;
-                        String creteria = searchBox.getText();
-
-                        // Start Search
-                        new ConcurrentProcessing("Выполняется поиск",
-                                new SearchingQuestion(creteria)).start();
-
-                    }
-
-                }
-            }
-        });
-
-        Collection<File> files = getFiles();
-
-        if (files.isEmpty()) {
-
-            JOptionPane.showMessageDialog(ui,
+            JOptionPane.showMessageDialog(App.ui,
                     "Указанная папка не содержит документы НАКС",
                     "Внимание!",
                     JOptionPane.ERROR_MESSAGE);
@@ -127,11 +72,52 @@ public class Root extends TreeSet<QuestionDocument> {
 
         }
 
-        new ConcurrentProcessing("Загрузка компонентов", new LoadingComponents(files)).start();
+        new ConcurrentProcessing("Загрузка компонентов",
+                new LoadingComponents(documents)).start();
 
-        ui.setVisible(true);
+        App.ui.setVisible(true);
 
     }
+
+    enum mode {
+
+        ON, OFF
+
+    }
+
+    private class SearchBoxKeyAdapter extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent arg0) {
+
+            boolean isAllowed
+                    = (arg0.getKeyCode() == KeyEvent.VK_ENTER && (arg0.getWhen() / 1000) >= 2);
+
+            if (isAllowed) {
+
+                // LOCK for UI interruption changes
+                //Interrupt table updates by switching on this mode
+                dontDisturbMode = mode.ON;
+
+                if (App.ui.searchBox.getText().isEmpty()) {
+                    // Fullfill table with questions from root derectory
+                    App.render.update(questions);
+                    App.ui.lblSearch.setText("");
+                    dontDisturbMode = mode.OFF;
+
+                } else {
+
+                    String creteria = App.ui.searchBox.getText();
+
+                    // Start Search
+                    new ConcurrentProcessing("Выполняется поиск",
+                            new SearchingQuestion(creteria)).start();
+
+                }
+
+            }
+        }
+    };
 
     /*
      * This is overriding of 'add' method.
@@ -158,10 +144,11 @@ public class Root extends TreeSet<QuestionDocument> {
 
             doc.extractQuestions();
 
-            return super.add(doc); //To change body of generated methods, choose Tools | Templates.
+            return super.add(doc);
+
         } catch (IOException | NoSuchElementException ex) {
 
-            JOptionPane.showMessageDialog(ui,
+            JOptionPane.showMessageDialog(App.ui,
                     String.format("Ответы на вопросы %s не найдены", doc.getName()),
                     "Внимание!",
                     JOptionPane.WARNING_MESSAGE);
@@ -172,13 +159,35 @@ public class Root extends TreeSet<QuestionDocument> {
     }
 
     /*
-     * Extracts unique questions from root array
+     *
+     * add new arrived questions from root
+     *
+     *
      */
-    static LinkedList<Question> extractQuestions(Root root) {
+    void updateQuestionList() {
+
+        forEach(questionDocument -> {
+
+            questionDocument.getQuestions().forEach(question -> {
+
+                questions.add(question);
+
+            });
+
+        });
+
+    }
+
+    /*
+     *
+     * Extracts unique questions from root folder
+     *
+     */
+    LinkedList<Question> extractLoadedQuestions() {
 
         TreeSet<Question> questions = new TreeSet<>();
 
-        root.forEach(questionDocument -> {
+        forEach(questionDocument -> {
 
             questionDocument.getQuestions().forEach(question -> {
 
@@ -196,7 +205,7 @@ public class Root extends TreeSet<QuestionDocument> {
      * This function checks whether question satisfy the condition of search or not
      *
      */
-    static boolean isValid(Question question, String creteria) {
+    boolean isValid(Question question, String creteria) {
 
         String regex = "(?i).*" + creteria + ".*";
 
@@ -213,21 +222,25 @@ public class Root extends TreeSet<QuestionDocument> {
      * This class represents the loading method and it's behaviour
      *
      */
-    private static class LoadingComponents extends Thread {
+    private class LoadingComponents extends Thread {
 
         Collection<File> files;
         Loading loading;
-        ArrayList<Double> times = new ArrayList<>();
-        static volatile boolean isCanceled = false;
+        ArrayList<Double> times;
+        double average = 0.00D;
+        volatile boolean isCanceled = false;
 
         public LoadingComponents(Collection<File> files) {
+            Root.this.documents = documents;
             this.files = files;
+            times = new ArrayList<>();
+            loading = new Loading();
         }
 
         @Override
         public void interrupt() {
             isCanceled = true;
-            super.interrupt(); //To change body of generated methods, choose Tools | Templates.
+            super.interrupt();
         }
 
         @Override
@@ -235,19 +248,16 @@ public class Root extends TreeSet<QuestionDocument> {
 
             System.out.println("Calling loader...");
 
-            loading = new Loading();
-
             loading.button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     loading.dispose();
                     interrupt();
-                    //Runtime.getRuntime().exit(1);
                 }
             });
 
             loading.setVisible(true);
-            loading.setLocationRelativeTo(ui);
+            loading.setLocationRelativeTo(App.ui);
 
             // total questions to load
             final int total = files.size();
@@ -256,22 +266,22 @@ public class Root extends TreeSet<QuestionDocument> {
             StopWatch logTime = new StopWatch();
             files.forEach(file -> {
 
-                // USER cancels
+                // USER cancels loading process by clicking button
                 if (isCanceled) {
                     return;
                 }
 
                 Runnable run = () -> {
                     try {
-                        root.add(new QuestionDocument(file.getPath()));
+                        add(new QuestionDocument(file.getPath()));
                     } catch (IOException ex) {
 
                     }
                 };
 
-                Thread t = new Thread(run);
-                StopWatch stopwatch = new StopWatch();
-                t.start();
+                Thread addingQuestion = new Thread(run);
+                StopWatch time = new StopWatch();
+                addingQuestion.start();
 
                 current += 1;
                 int stack = total - current;
@@ -279,21 +289,26 @@ public class Root extends TreeSet<QuestionDocument> {
                 loading.progressBar.setStringPainted(true);
                 loading.progressBar.setValue((current * 100) / total);
 
-                if (!dontDisturbMode) {
-                    synchronized (ui.table) {
-                        ui.table.notifyAll();
-                        render = new TableRender(ui.table, extractQuestions(root));
+                updateQuestionList();
+
+                if (dontDisturbMode == mode.OFF) {
+                    synchronized (App.ui.table) {
+                        System.out.println(
+                                String.format("File %s was loaded dynamicly",
+                                        file.getName()));
+                        App.ui.table.notifyAll();
+                        App.render.update(questions);
                     }
                 }
 
                 try {
-                    t.join();
+                    addingQuestion.join();
                 } catch (InterruptedException ex) {
 
                 }
 
-                times.add(stopwatch.elapsedTime());
-                times.forEach(time -> average += time);
+                times.add(time.elapsedTime());
+                times.forEach(t -> average += t);
                 average /= times.size();
                 double approximateTime = average * stack;
 
@@ -314,7 +329,7 @@ public class Root extends TreeSet<QuestionDocument> {
                 loading.label.setText(
                         String.format("До полной загрузки осталось: %s", text));
 
-                loading.setTitle(String.format("Выполнено:  %d из %d",
+                loading.setTitle(String.format("Загружено:  %d из %d",
                         (current * 2), (total * 2)));
 
             });
@@ -322,8 +337,8 @@ public class Root extends TreeSet<QuestionDocument> {
             // TO DO add to log file
             double logTimeEnd = logTime.elapsedTime();
 
-            if (root.isEmpty()) {
-                JOptionPane.showMessageDialog(ui, "Данная папка не содержит документы НАКС",
+            if (isEmpty()) {
+                JOptionPane.showMessageDialog(App.ui, "Данная папка не содержит документы НАКС",
                         "Внимание!", JOptionPane.ERROR_MESSAGE);
                 Runtime.getRuntime().exit(1);
 
@@ -336,7 +351,7 @@ public class Root extends TreeSet<QuestionDocument> {
     /*
      * This class represents the searching method and it's behaviour
      */
-    private static class SearchingQuestion extends Thread {
+    private class SearchingQuestion extends Thread {
 
         String creteria;
 
@@ -351,8 +366,8 @@ public class Root extends TreeSet<QuestionDocument> {
 
             StopWatch stopWatch = new StopWatch();
 
-            LinkedList<Question> results = new LinkedList<>(
-                    extractQuestions(root).stream()
+            TreeSet<Question> results = new TreeSet<>(
+                    extractLoadedQuestions().stream()
                     .filter(question -> isValid(question, creteria))
                     .collect(Collectors.toList()));
 
@@ -360,23 +375,27 @@ public class Root extends TreeSet<QuestionDocument> {
 
             int resultsCount = results.size();
 
-            // LOCK for UI representation changes
-            synchronized (ui.table) {
+            synchronized (App.ui.table) {
                 // Fullfill table with founded questions
-                dontDisturbMode = true;
-                ui.table.notifyAll();
-                render = new TableRender(ui.table, results);
+                dontDisturbMode = mode.ON;
+                App.ui.table.notifyAll();
+                App.render.update(results);
             }
-            synchronized (ui.lblSearch) {
+            synchronized (App.ui.lblSearch) {
 
                 String response = (results.isEmpty())
                         ? "По вашему запросу ничего не найдено"
                         : "Найдено: " + resultsCount + " "
                         + getCorrectStrEnding(resultsCount,
-                                "результат") + "  ( " + time % 60 + " сек. ) ";
+                                "результат") + "  (" + time % 60 + " сек.) ";
 
-                ui.lblSearch.notifyAll();
-                ui.lblSearch.setText(response);
+                App.ui.lblSearch.notify();
+                App.ui.lblSearch.setText(response);
+                try {
+                    App.ui.lblSearch.wait();
+                } catch (InterruptedException ex) {
+
+                }
 
             }
 
@@ -387,7 +406,7 @@ public class Root extends TreeSet<QuestionDocument> {
     /*
      *  This class runs threads passed as a parameter and controls UI
      */
-    private static class ConcurrentProcessing extends Thread {
+    private class ConcurrentProcessing extends Thread {
 
         volatile boolean isInterrupted = false;
         String message;
@@ -426,47 +445,43 @@ public class Root extends TreeSet<QuestionDocument> {
             //Start waiting
             while (!isInterrupted) {
 
-                for (int i = 0; i <= 3 && !dontDisturbMode; i++) {
+                for (int i = 0; i <= 3 && dontDisturbMode == mode.OFF; i++) {
 
-                    synchronized (ui.lblSearch) {
-                        ui.lblSearch.notifyAll();
+                    synchronized (App.ui.lblSearch) {
+                        App.ui.lblSearch.notify();
                         if (i == 0 && !isInterrupted) {
-                            ui.lblSearch.setText(message);
+                            App.ui.lblSearch.setText(message);
                         }
                         if (i == 1 && !isInterrupted) {
-                            ui.lblSearch.setText(message + ".");
+                            App.ui.lblSearch.setText(message + ".");
                         }
                         if (i == 2 && !isInterrupted) {
-                            ui.lblSearch.setText(message + ". .");
+                            App.ui.lblSearch.setText(message + ". .");
                         }
                         if (i == 3 && !isInterrupted) {
-                            ui.lblSearch.setText(message + ". . .");
+                            App.ui.lblSearch.setText(message + ". . .");
                         }
 
                     }
                     try {
-                        this.sleep(500);
+                        this.sleep(400);
                     } catch (InterruptedException ex) {
 
                     }
 
                 }
             }
-            synchronized (ui.lblSearch) {
-                try {
-                    ui.lblSearch.wait(5000);
-                    ui.lblSearch.setText("");
-                } catch (InterruptedException ex) {
-
-                }
+            synchronized (App.ui.lblSearch) {
+                App.ui.lblSearch.setText("");
             }
+
         }
     }
 
     /*
      * Notice: valid only for words ending with Russian consonant letter
      */
-    static String getCorrectStrEnding(int num, String ofEntity) {
+    String getCorrectStrEnding(int num, String ofEntity) {
 
         String rcStr = String.valueOf(num);
         int preLastNum;
