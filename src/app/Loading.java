@@ -2,6 +2,7 @@ package app;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Toolkit;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +29,7 @@ public class Loading extends JFrame {
 
         progressBar = new JProgressBar();
 
+        progressBar.setStringPainted(true);
         progressBar.setBounds(15, 61, 459, 22);
         progressBar.setForeground(new Color(44, 184, 14));
 
@@ -44,5 +46,20 @@ public class Loading extends JFrame {
         contentPane.add(button);
         contentPane.add(label);
         contentPane.add(progressBar);
+
+        int screenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
+        int screenHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+        int width = this.getWidth();
+        int height = this.getHeight();
+
+        int north = ((screenWidth - width) / 2);
+        int east = (screenWidth - width);
+
+        setLocation(east, 0);
+
+        progressBar.setMaximum(100);
+        progressBar.setMinimum(0);
+        setVisible(true);
     }
 }

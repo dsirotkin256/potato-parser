@@ -4,18 +4,21 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -51,6 +54,10 @@ public class Root extends TreeSet<QuestionDocument> {
             documents = new ArrayList<>(FileUtils.listFiles(directory,
                     new RegexFileFilter(".+(?<!_о).doc"),
                     DirectoryFileFilter.DIRECTORY));
+
+            long seed = System.nanoTime();
+            Collections.shuffle(documents, new Random(seed));
+
         } catch (IllegalArgumentException ex) {
 
             JOptionPane.showMessageDialog(App.ui,
@@ -74,8 +81,6 @@ public class Root extends TreeSet<QuestionDocument> {
 
         new ConcurrentProcessing("Загрузка компонентов",
                 new LoadingComponents(documents)).start();
-
-        App.ui.setVisible(true);
 
     }
 
@@ -122,38 +127,35 @@ public class Root extends TreeSet<QuestionDocument> {
     /*
      * This is overriding of 'add' method.
      *
-     * When question document is adding this function
+     * When question document was loaded successfuly, this function
      * is looking for the answer document in selected directory
      * and set detected answer document to the question that preparing to add into collection
      *
      */
-    @Override
-    public boolean add(QuestionDocument doc) {
+    void loadDocument(QuestionDocument doc) {
 
-        try {
+        boolean isAdded = add(doc);
 
-            String answerFileName = doc.getName().replace(".doc", "") + ("_о") + (".doc");
+        if (isAdded) {
+            try {
+                String answerFileName = doc.getName().replace(".doc", "") + ("_о") + (".doc");
 
-            LinkedList<File> answer = new LinkedList<File>(FileUtils.listFiles(directory,
-                    new RegexFileFilter(answerFileName),
-                    DirectoryFileFilter.DIRECTORY));
+                LinkedList<File> answer = new LinkedList<File>(FileUtils.listFiles(directory,
+                        new RegexFileFilter(answerFileName),
+                        DirectoryFileFilter.DIRECTORY));
 
-            String answerPath = answer.getFirst().getPath();
+                String answerPath = answer.getFirst().getPath();
 
-            doc.setAnswerDocument(answerPath);
+                doc.setAnswerDocument(answerPath);
 
-            doc.extractQuestions();
+                doc.extractQuestions();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(App.ui,
+                        String.format("Ответы на вопросы %s не найдены", doc.getName()),
+                        "Внимание!",
+                        JOptionPane.WARNING_MESSAGE);
+            }
 
-            return super.add(doc);
-
-        } catch (IOException | NoSuchElementException ex) {
-
-            JOptionPane.showMessageDialog(App.ui,
-                    String.format("Ответы на вопросы %s не найдены", doc.getName()),
-                    "Внимание!",
-                    JOptionPane.WARNING_MESSAGE);
-
-            return false;
         }
 
     }
@@ -165,17 +167,11 @@ public class Root extends TreeSet<QuestionDocument> {
      *
      */
     void updateQuestionList() {
-
         forEach(questionDocument -> {
-
             questionDocument.getQuestions().forEach(question -> {
-
                 questions.add(question);
-
             });
-
         });
-
     }
 
     /*
@@ -217,6 +213,7 @@ public class Root extends TreeSet<QuestionDocument> {
 
     }
 
+
     /*
      *
      * This class represents the loading method and it's behaviour
@@ -224,17 +221,39 @@ public class Root extends TreeSet<QuestionDocument> {
      */
     private class LoadingComponents extends Thread {
 
-        Collection<File> files;
+        ArrayList<File> files;
         Loading loading;
         ArrayList<Double> times;
+        StopWatch time;
         double average = 0.00D;
+        short percentage = 0;
         volatile boolean isCanceled = false;
+        ProgressWorker pw;
+        Thread addQuestion;
 
-        public LoadingComponents(Collection<File> files) {
+        class ProgressWorker extends SwingWorker<Object, Object> {
+
+            @Override
+            protected Object doInBackground() throws Exception {
+                while (percentage <= 100) {
+
+                    setProgress(percentage);
+
+                    sleep((long) average * 1000);
+
+                }
+                return null;
+            }
+
+        }
+
+        public LoadingComponents(ArrayList<File> files) {
             Root.this.documents = documents;
             this.files = files;
             times = new ArrayList<>();
+            App.ui.setVisible(true);
             loading = new Loading();
+            this.pw = new ProgressWorker();
         }
 
         @Override
@@ -248,6 +267,8 @@ public class Root extends TreeSet<QuestionDocument> {
 
             System.out.println("Calling loader...");
 
+            final int total = files.size() * 2;
+
             loading.button.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -256,14 +277,22 @@ public class Root extends TreeSet<QuestionDocument> {
                 }
             });
 
-            loading.setVisible(true);
-            loading.setLocationRelativeTo(App.ui);
+            pw.addPropertyChangeListener(new PropertyChangeListener() {
 
-            // total questions to load
-            final int total = files.size();
-            loading.progressBar.setMaximum(total);
+                @Override
+                public void propertyChange(PropertyChangeEvent evt) {
+                    String name = evt.getPropertyName();
+                    if (name.equals("progress")) {
+                        int progress = (int) evt.getNewValue();
+                        loading.progressBar.setValue(progress);
+                        loading.progressBar.repaint();
+                    }
+                }
 
-            StopWatch logTime = new StopWatch();
+            });
+
+            pw.execute();
+
             files.forEach(file -> {
 
                 // USER cancels loading process by clicking button
@@ -271,25 +300,25 @@ public class Root extends TreeSet<QuestionDocument> {
                     return;
                 }
 
+                String path = file.getPath();
+
                 Runnable run = () -> {
                     try {
-                        add(new QuestionDocument(file.getPath()));
+                        loadDocument(new QuestionDocument(path));
                     } catch (IOException ex) {
 
                     }
                 };
 
-                Thread addingQuestion = new Thread(run);
-                StopWatch time = new StopWatch();
-                addingQuestion.start();
+                addQuestion = new Thread(run);
+                time = new StopWatch();
+                addQuestion.setPriority(3);
+                addQuestion.start();
 
-                current += 1;
+                current += 2;
                 int stack = total - current;
 
-                loading.progressBar.setStringPainted(true);
-                loading.progressBar.setValue((current * 100) / total);
-
-                updateQuestionList();
+                percentage = (short) ((current * 100) / total);
 
                 if (dontDisturbMode == mode.OFF) {
                     synchronized (App.ui.table) {
@@ -302,10 +331,12 @@ public class Root extends TreeSet<QuestionDocument> {
                 }
 
                 try {
-                    addingQuestion.join();
+                    addQuestion.join();
                 } catch (InterruptedException ex) {
 
                 }
+
+                updateQuestionList();
 
                 times.add(time.elapsedTime());
                 times.forEach(t -> average += t);
@@ -329,14 +360,12 @@ public class Root extends TreeSet<QuestionDocument> {
                 loading.label.setText(
                         String.format("До полной загрузки осталось: %s", text));
 
-                loading.setTitle(String.format("Загружено:  %d из %d",
-                        (current * 2), (total * 2)));
+                loading.setTitle(String.format("Файлов загружено:  %d из %d",
+                        current, total));
 
             });
 
-            // TO DO add to log file
-            double logTimeEnd = logTime.elapsedTime();
-
+            // TO DO add to log file loading time (issue#)
             if (isEmpty()) {
                 JOptionPane.showMessageDialog(App.ui, "Данная папка не содержит документы НАКС",
                         "Внимание!", JOptionPane.ERROR_MESSAGE);

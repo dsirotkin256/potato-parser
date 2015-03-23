@@ -1,6 +1,7 @@
 
 /nbproject
 /build
+/lib
 
 build.xml
 manifest.mf
