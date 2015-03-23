@@ -61,24 +61,24 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
     Pattern getPattern(String questionNumber) {
 
         String regexPattern = "^(?<min>\\d+)-(?<max>\\d+)";
-
         Pattern d = Pattern.compile(regexPattern, Pattern.MULTILINE);
-
         Matcher dm = d.matcher(answerDocument.toString());
 
         String regex = null;
+
+        int iQuestionNumber = Integer.parseInt(questionNumber);
 
         while (dm.find()) {
 
             String minNumber = dm.group("min");
             String maxNumber = dm.group("max");
 
-            if (questionNumber.length() == 1) {
+            if (iQuestionNumber < 10) {
                 regex = "0-" + maxNumber;
 
                 break;
 
-            } else if (questionNumber.length() == 2) {
+            } else if (iQuestionNumber < 100) {
 
                 if (questionNumber.charAt(0) == minNumber.charAt(0)) {
 
@@ -86,7 +86,7 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
                     break;
                 }
 
-            } else if (questionNumber.length() == 3) {
+            } else if (iQuestionNumber < 1000) {
 
                 int lastVal = Character.getNumericValue(questionNumber.charAt(2));
 
