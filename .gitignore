@@ -2,5 +2,6 @@
 /build
 /dist
 
+./.gitignore
 build.xml
 manifest.mf
