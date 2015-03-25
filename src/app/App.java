@@ -2,18 +2,24 @@ package app;
 
 import java.io.File;
 import javax.swing.JFileChooser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class App {
 
     static {
         ui = UI.instance;
         render = new TableRender();
+        logger = LogManager.getLogger(App.class.getName());
     }
 
     public static UI ui;
     public static final TableRender render;
+    private static final Logger logger;
 
     public static void main(String[] args) {
+
+        logger.info("Logger Init..");
 
         File directory = getRootDirectory();
         Root root = new Root(directory);
