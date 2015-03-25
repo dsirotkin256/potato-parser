@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 public class UI extends JFrame {
 
     public final static UI instance = getInstance();
+    private volatile static Mode dontDisturbMode = Mode.OFF;
 
     private static class Helper {
 
@@ -140,4 +141,13 @@ public class UI extends JFrame {
         );
         contentPane.setLayout(gl_contentPane);
     }
+
+    public static void setDontDisturbMode(Mode dontDisturbMode) {
+        UI.dontDisturbMode = dontDisturbMode;
+    }
+
+    public static Mode getDontDisturbMode() {
+        return dontDisturbMode;
+    }
+
 }

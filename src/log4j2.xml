@@ -10,7 +10,7 @@
         </File>
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout>
-                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p [%c.%t] %m%n</Pattern>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %style{[%c::%t->%M]}{Bright} %style{%m}{FG_Cyan}%n</Pattern>
             </PatternLayout>
         </Console>
     </Appenders>

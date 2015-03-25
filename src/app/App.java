@@ -1,13 +1,16 @@
 package app;
 
 import java.io.File;
+import java.util.Locale;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class App {
 
     static {
+        Locale.setDefault(new Locale("ru"));
         ui = UI.instance;
         render = new TableRender();
         logger = LogManager.getLogger(App.class.getName());
@@ -15,15 +18,34 @@ public class App {
 
     public static UI ui;
     public static final TableRender render;
-    private static final Logger logger;
+    public static final Logger logger;
 
     public static void main(String[] args) {
 
         logger.info("Logger Init..");
 
-        File directory = getRootDirectory();
-        Root root = new Root(directory);
+//        File directory = getRootDirectory();
+        try {
+            Root root = new Root(new File("sample"));
+            new ConcurrentProcessing("Загрузка компонентов",
+                    new LoadingComponents(root)).start();
+            App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
 
+        } catch (IllegalArgumentException ex) {
+
+            JOptionPane.showMessageDialog(App.ui,
+                    "Данной папки не существует.",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        } catch (Root.NoDocumentsFoundException ex) {
+            JOptionPane.showMessageDialog(App.ui,
+                    "Указанная папка не содержит документы НАКС",
+                    "Внимание!",
+                    JOptionPane.ERROR_MESSAGE);
+
+            System.exit(1);
+        }
     }
 
     public static File getRootDirectory() {
@@ -42,10 +64,7 @@ public class App {
             directory = dir.getSelectedFile();
 
         } else {
-
-            // IF operation was canceled
-            Runtime.getRuntime().exit(1);
-
+            System.exit(0);
         }
 
         return directory;
