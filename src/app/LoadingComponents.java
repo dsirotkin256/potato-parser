@@ -118,7 +118,7 @@ public class LoadingComponents extends Thread {
                                 String.format("File %s was loaded dynamicly",
                                         file.getName()));
                         App.ui.table.notifyAll();
-                        App.render.update(doc.getQuestions());
+                        App.render.update(root.getQuestions());
                     }
                 }
 

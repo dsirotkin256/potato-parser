@@ -13,6 +13,7 @@ public class SearchingQuestion extends Thread {
 
     public SearchingQuestion(String creteria, Root root) {
         this.creteria = creteria;
+        this.root = root;
     }
 
     @Override

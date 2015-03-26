@@ -51,7 +51,6 @@ public class TableRender extends AbstractTableModel {
 
     public void update(TreeSet<Question> questions) {
         this.questions.clear();
-
         pull(questions);
     }
 
