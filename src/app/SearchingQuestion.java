@@ -22,10 +22,10 @@ public class SearchingQuestion extends Thread {
 
         StopWatch stopWatch = new StopWatch();
 
-        TreeSet<Question> results = new TreeSet<>(
-                root.extractLoadedQuestions().stream()
-                .filter(question -> root.isValid(question, creteria))
-                .collect(Collectors.toList()));
+        TreeSet<Question> results
+                = new TreeSet<>(root.extractLoadedQuestions().stream()
+                        .filter(question -> root.isValid(question, creteria))
+                        .collect(Collectors.toList()));
 
         double time = stopWatch.elapsedTime();
 
@@ -37,6 +37,7 @@ public class SearchingQuestion extends Thread {
             App.ui.table.notifyAll();
             App.render.update(results);
         }
+
         synchronized (App.ui.lblSearch) {
 
             String response = (results.isEmpty())

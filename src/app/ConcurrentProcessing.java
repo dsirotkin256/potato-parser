@@ -35,7 +35,6 @@ public class ConcurrentProcessing extends Thread {
                 System.out.println("Finished");
                 isInterrupted = true;
                 // End Action
-
             }
         }.start();
 

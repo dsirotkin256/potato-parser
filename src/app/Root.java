@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,9 +21,10 @@ public class Root extends TreeSet<QuestionDocument> {
     public Root(File directory) throws NoDocumentsFoundException {
         this.questions = new TreeSet<>();
         this.directory = directory;
-        this.documents = new ArrayList<>(FileUtils.listFiles(directory,
-                new RegexFileFilter(".+(?<!_о).doc"),
-                DirectoryFileFilter.DIRECTORY));
+        this.documents
+                = new ArrayList<>(FileUtils.listFiles(directory,
+                                new RegexFileFilter(".+(?<!_о).doc"),
+                                DirectoryFileFilter.DIRECTORY));
         if (documents.isEmpty()) {
             throw new NoDocumentsFoundException();
         }
@@ -53,23 +55,23 @@ public class Root extends TreeSet<QuestionDocument> {
         try {
             String answerFileName = doc.getName().replace(".doc", "") + ("_о") + (".doc");
 
-            LinkedList<File> answer = new LinkedList<File>(FileUtils.listFiles(directory,
-                    new RegexFileFilter(answerFileName),
-                    DirectoryFileFilter.DIRECTORY));
+            LinkedList<File> answer
+                    = new LinkedList<File>(FileUtils.listFiles(directory,
+                                    new RegexFileFilter(answerFileName),
+                                    DirectoryFileFilter.DIRECTORY));
 
             String answerPath = answer.getFirst().getPath();
-
             doc.setAnswerDocument(answerPath);
-
             doc.extractQuestions();
-        } catch (IOException ex) {
+
+            add(doc);
+
+        } catch (IOException | NoSuchElementException ex) {
             JOptionPane.showMessageDialog(App.ui,
                     String.format("Ответы на вопросы %s не найдены", doc.getName()),
                     "Внимание!",
                     JOptionPane.WARNING_MESSAGE);
         }
-
-        add(doc);
 
     }
 

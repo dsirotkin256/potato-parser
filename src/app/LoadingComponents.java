@@ -20,6 +20,7 @@ public class LoadingComponents extends Thread {
     ArrayList<Double> times;
     StopWatch time;
     double average = 0.00D;
+    double approximateTime;
     short percentage = 0;
     volatile boolean isCanceled = false;
     ProgressWorker pw;
@@ -34,9 +35,7 @@ public class LoadingComponents extends Thread {
             while (percentage <= 100) {
 
                 setProgress(percentage);
-
                 sleep((long) average * 1000);
-
             }
             return null;
         }
@@ -62,8 +61,6 @@ public class LoadingComponents extends Thread {
 
         System.out.println("Calling loader...");
 
-        final int total = root.getDocuments().size() * 2;
-
         loading.button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -88,6 +85,8 @@ public class LoadingComponents extends Thread {
 
         pw.execute();
 
+        final int total = root.getDocuments().size() * 2;
+
         synchronized (root.getDocuments()) {
             root.getDocuments().forEach(file -> {
 
@@ -100,13 +99,13 @@ public class LoadingComponents extends Thread {
 
                 QuestionDocument doc = null;
 
+                time = new StopWatch();
+
                 try {
                     doc = new QuestionDocument(path);
                     root.loadDocument(doc);
                 } catch (IOException ex) {
                 }
-
-                time = new StopWatch();
 
                 current += 2;
                 int stack = total - current;
@@ -126,15 +125,16 @@ public class LoadingComponents extends Thread {
                 root.updateQuestionList();
 
                 times.add(time.elapsedTime());
+
                 times.forEach(t -> average += t);
                 average /= times.size();
-                double approximateTime = average * stack;
+                approximateTime = average * stack;
 
                 String text;
 
                 if (approximateTime >= 60) {
 
-                    //Get representaion of approximate time in minutes
+                    //Get representaion of approximate time in minutes and seconds
                     text = String.format("%02d мин. %02d сек.",
                             (int) ((approximateTime % 3600) / 60), (int) (approximateTime % 60));
 

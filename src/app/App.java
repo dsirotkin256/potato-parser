@@ -24,9 +24,9 @@ public class App {
 
         logger.info("Logger Init..");
 
-//        File directory = getRootDirectory();
+        File directory = getRootDirectory();
         try {
-            Root root = new Root(new File("sample"));
+            Root root = new Root(directory);
             new ConcurrentProcessing("Загрузка компонентов",
                     new LoadingComponents(root)).start();
             App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
