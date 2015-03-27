@@ -1,7 +1,7 @@
 package app;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.TreeSet;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -38,7 +38,7 @@ public class TableRender extends AbstractTableModel {
         return tableQuestions.get(rowIndex)[columnIndex];
     }
 
-    private void pull(TreeSet<Question> questions) {
+    private void pull(Collection<Question> questions) {
         this.tableQuestions.clear();
         this.questions = new LinkedList<>(questions);
 
@@ -49,7 +49,7 @@ public class TableRender extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public void update(TreeSet<Question> questions) {
+    public void update(Collection<Question> questions) {
         this.questions.clear();
         pull(questions);
     }

@@ -42,7 +42,7 @@ public class App {
                     "Внимание!",
                     JOptionPane.ERROR_MESSAGE);
 
-            System.exit(1);
+            main(null);
         }
     }
 

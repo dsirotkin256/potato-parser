@@ -32,7 +32,9 @@ public class Root extends TreeSet<QuestionDocument> {
                 = new ArrayList<>(FileUtils.listFiles(directory,
                                 new RegexFileFilter(".+(?<!_о).doc"),
                                 DirectoryFileFilter.DIRECTORY));
-        Collections.shuffle(documents, new Random());
+        int seeds = new Random().nextInt();
+
+        Collections.shuffle(documents, new Random(seeds));
 
         if (documents.isEmpty()) {
             throw new NoDocumentsFoundException();
@@ -105,7 +107,14 @@ public class Root extends TreeSet<QuestionDocument> {
      */
     synchronized LinkedList<Question> extractLoadedQuestions() {
 
-        TreeSet<Question> questions = new TreeSet<>();
+        TreeSet<Question> questions = new TreeSet<Question>() {
+
+            @Override
+            public synchronized boolean add(Question e) {
+                return super.add(e); //To change body of generated methods, choose Tools | Templates.
+            }
+
+        };
 
         forEach(questionDocument -> {
 
@@ -156,7 +165,10 @@ public class Root extends TreeSet<QuestionDocument> {
             preLastNum = Integer.parseInt(
                     String.valueOf(rcStr.charAt(rcStr.length() - 2)));
 
-            return grammarStr + "ов";
+            if (preLastNum == 1) {
+                return grammarStr + "ов";
+            }
+
         }
 
         if (lastNum >= 2 && lastNum <= 4) {

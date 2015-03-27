@@ -10,12 +10,16 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
     public SearchBoxKeyAdapter(Root root) {
         this.root = root;
     }
+    StopWatch timeCatched = new StopWatch();
 
     @Override
-    public void keyPressed(KeyEvent arg0) {
+
+    public void keyReleased(KeyEvent arg0) {
+
+        double seconds = timeCatched.elapsedTime();
 
         boolean isAllowed
-                = (arg0.getKeyCode() == KeyEvent.VK_ENTER && (arg0.getWhen() / 1000) >= 2);
+                = (seconds >= 0.3);
 
         if (isAllowed) {
 
@@ -40,5 +44,6 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
             }
 
         }
+        timeCatched = new StopWatch();
     }
 };
