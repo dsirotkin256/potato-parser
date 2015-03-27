@@ -35,6 +35,8 @@ public class LoadingComponents implements Magical {
     @Override
     public void doMagic() {
 
+        App.ui.lblSearch.setText("");
+
         pw.execute();
 
         final int total = root.getDocuments().size() * 2;

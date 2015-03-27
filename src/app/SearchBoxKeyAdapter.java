@@ -38,8 +38,7 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
                 String creteria = App.ui.searchBox.getText();
 
                 // Start Search
-                new ConcurrentProcessing("Выполняется поиск",
-                        new SearchingQuestion(creteria, root)).doMagic();
+                new SearchingQuestion(creteria, root).doMagic();
 
             }
 
