@@ -22,9 +22,8 @@ public class App {
 
     public static void main(String[] args) {
 
-        File directory = getRootDirectory();
         try {
-            Root root = new Root(directory);
+            Root root = new Root(new File("temp"));
             new ConcurrentProcessing("Загрузка компонентов",
                     new LoadingComponents(root)).start();
             App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
