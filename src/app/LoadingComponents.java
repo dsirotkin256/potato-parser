@@ -14,7 +14,7 @@ import javax.swing.SwingWorker;
  * This class represents the loading method and it's behaviour
  *
  */
-public class LoadingComponents extends Thread {
+public class LoadingComponents implements Magical {
 
     Loading loading;
     ArrayList<Double> times;
@@ -35,7 +35,6 @@ public class LoadingComponents extends Thread {
             while (percentage <= 100) {
 
                 setProgress(percentage);
-                sleep((long) average * 1000);
             }
             return null;
         }
@@ -51,13 +50,7 @@ public class LoadingComponents extends Thread {
     }
 
     @Override
-    public void interrupt() {
-        isCanceled = true;
-        super.interrupt();
-    }
-
-    @Override
-    public void run() {
+    public void doMagic() {
 
         System.out.println("Calling loader...");
 
@@ -65,7 +58,6 @@ public class LoadingComponents extends Thread {
             @Override
             public void mouseClicked(MouseEvent e) {
                 loading.dispose();
-                interrupt();
             }
         });
 

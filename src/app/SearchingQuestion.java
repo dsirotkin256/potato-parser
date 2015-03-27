@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 /*
  * This class represents the searching method and it's behaviour
  */
-public class SearchingQuestion extends Thread {
+public class SearchingQuestion implements Magical {
 
     String creteria;
     Root root;
@@ -17,7 +17,7 @@ public class SearchingQuestion extends Thread {
     }
 
     @Override
-    public void run() {
+    public void doMagic() {
 
         System.out.println("Performing search...");
 

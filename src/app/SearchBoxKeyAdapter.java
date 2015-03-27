@@ -39,7 +39,7 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
 
                 // Start Search
                 new ConcurrentProcessing("Выполняется поиск",
-                        new SearchingQuestion(creteria, root)).start();
+                        new SearchingQuestion(creteria, root)).doMagic();
 
             }
 
