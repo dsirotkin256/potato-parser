@@ -1,9 +1,5 @@
 package app;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
@@ -37,27 +33,6 @@ public class LoadingComponents implements Magical {
 
     @Override
     public void doMagic() {
-
-        loading.button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                loading.dispose();
-            }
-        });
-
-        pw.addPropertyChangeListener(new PropertyChangeListener() {
-
-            @Override
-            public void propertyChange(PropertyChangeEvent evt) {
-                String name = evt.getPropertyName();
-                if (name.equals("progress")) {
-                    int progress = (int) evt.getNewValue();
-                    loading.progressBar.setValue(progress);
-                    loading.progressBar.repaint();
-                }
-            }
-
-        });
 
         pw.execute();
 
@@ -134,6 +109,10 @@ public class LoadingComponents implements Magical {
         }
         loading.dispose();
 
+    }
+
+    public Loading getLoading() {
+        return loading;
     }
 
 }
