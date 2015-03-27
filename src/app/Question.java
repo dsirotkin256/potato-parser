@@ -1,6 +1,8 @@
 package app;
 
 import app.ui.MainFrame;
+import java.io.IOException;
+import templates.HtmlTemplate;
 
 public class Question implements Comparable<Question> {
 
@@ -50,14 +52,21 @@ public class Question implements Comparable<Question> {
         this.link = link;
     }
 
-    public void setPreview() {
+    public void setPreview() throws IOException {
 
-        final String questionHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getQuestion() + "</font><br><br><br><font size=\"3\" face=\"verdana\">Документ: <i>" + getDocName() + "</i><br>Вопрос <i>№" + getQuestionNumber() + "</i></font></body></html>";
+        final String questionTpl = String.format(
+                HtmlTemplate.getQuestionTplInst().getContent(),
+                getQuestion(),
+                getDocName(),
+                Integer.parseInt(getQuestionNumber()));
 
-        final String answerHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getAnswer() + "</font><body></html>";
+        final String asnwerTpl = String.format(
+                HtmlTemplate.getAnswerTplInst().getContent(),
+                getAnswer()
+        );
 
-        MainFrame.getInstance().questionPane.setText(questionHTML);
-        MainFrame.getInstance().answerPane.setText(answerHTML);
+        MainFrame.getInstance().questionPane.setText(questionTpl);
+        MainFrame.getInstance().answerPane.setText(asnwerTpl);
 
         MainFrame.getInstance().questionPane.setCaretPosition(0);
         MainFrame.getInstance().answerPane.setCaretPosition(0);
