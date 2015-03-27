@@ -5,7 +5,6 @@ package app;
  */
 public class ConcurrentProcessing implements Magical {
 
-    private volatile boolean isInterrupted = false;
     private String message;
     private Magical foo;
 
@@ -18,13 +17,9 @@ public class ConcurrentProcessing implements Magical {
     @Override
     public void doMagic() {
 
-        new Thread(() -> {
-            foo.doMagic();
-        }).start();
+        foo.doMagic();
 
-        synchronized (App.ui.lblSearch) {
-            App.ui.lblSearch.setText("");
-        }
+        App.ui.lblSearch.setText("");
 
     }
 }

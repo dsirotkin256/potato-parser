@@ -110,8 +110,8 @@ public class Root extends TreeSet<QuestionDocument> {
         TreeSet<Question> questions = new TreeSet<Question>() {
 
             @Override
-            public synchronized boolean add(Question e) {
-                return super.add(e); //To change body of generated methods, choose Tools | Templates.
+            public boolean add(Question e) {
+                return super.add(e);
             }
 
         };

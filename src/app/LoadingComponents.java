@@ -7,7 +7,6 @@ import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 
 /*
  *
@@ -28,31 +27,16 @@ public class LoadingComponents implements Magical {
     Root root;
     private static int current = 0;
 
-    class ProgressWorker extends SwingWorker<Object, Object> {
-
-        @Override
-        protected Object doInBackground() throws Exception {
-            while (percentage <= 100) {
-
-                setProgress(percentage);
-            }
-            return null;
-        }
-
-    }
-
     public LoadingComponents(Root root) {
         this.root = root;
         times = new ArrayList<>();
         App.ui.setVisible(true);
         loading = new Loading();
-        this.pw = new ProgressWorker();
+        this.pw = new ProgressWorker(this);
     }
 
     @Override
     public void doMagic() {
-
-        System.out.println("Calling loader...");
 
         loading.button.addMouseListener(new MouseAdapter() {
             @Override
@@ -106,16 +90,10 @@ public class LoadingComponents implements Magical {
             percentage = (short) ((current * 100) / total);
 
             if (UI.getDontDisturbMode() == Mode.OFF) {
-                synchronized (App.ui.table) {
-                    System.out.println(
-                            String.format("File %s was loaded dynamicly",
-                                    file.getName()));
-                    App.ui.table.notifyAll();
-                    App.render.update(root.getQuestions());
-                }
+                App.render.update(root.getQuestions());
             }
 
-            new Thread(() -> root.updateQuestionList()).start();
+            root.updateQuestionList();
 
             times.add(time.elapsedTime());
 
