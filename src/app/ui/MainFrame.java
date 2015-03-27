@@ -17,19 +17,23 @@ import javax.swing.border.EmptyBorder;
 
 public class MainFrame extends JFrame {
 
-    private final static MainFrame mainFrame;
+    private final static MainFrame instance;
 
     public JTextField searchBox;
-    public JEditorPane answerPane, questionPane;
+    public JEditorPane answerPane;
+    public JEditorPane questionPane;
     public JTable table;
+
     public JLabel lblSearch;
+    private JLabel lblAnswer;
+    private JLabel lblQuestion;
 
     private JPanel contentPane;
-    private JScrollPane answerScrollPane, questionScrollPane;
-    private JLabel label_1;
+    private JScrollPane answerScrollPane;
+    private JScrollPane questionScrollPane;
 
     static {
-        mainFrame = new MainFrame();
+        instance = new MainFrame();
     }
 
     private MainFrame() {
@@ -51,7 +55,7 @@ public class MainFrame extends JFrame {
         });
 
         searchBox.setFont(new Font("Consolas", Font.PLAIN, 15));
-        searchBox.setText("\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0432\u043E\u043F\u0440\u043E\u0441");
+        searchBox.setText("Введите вопрос");
         searchBox.setColumns(10);
 
         JScrollPane scrollPane = new JScrollPane();
@@ -64,8 +68,8 @@ public class MainFrame extends JFrame {
 
         scrollPane.setViewportView(table);
 
-        JLabel label = new JLabel("\u041E\u0442\u0432\u0435\u0442");
-        label.setFont(new Font("Consolas", Font.PLAIN, 16));
+        lblAnswer = new JLabel("Ответ");
+        lblAnswer.setFont(new Font("Consolas", Font.PLAIN, 16));
 
         answerScrollPane = new JScrollPane();
 
@@ -79,8 +83,8 @@ public class MainFrame extends JFrame {
 
         questionScrollPane = new JScrollPane();
 
-        label_1 = new JLabel("\u0412\u043E\u043F\u0440\u043E\u0441");
-        label_1.setFont(new Font("Consolas", Font.PLAIN, 16));
+        lblQuestion = new JLabel("Вопрос");
+        lblQuestion.setFont(new Font("Consolas", Font.PLAIN, 16));
 
         questionPane = new JEditorPane();
         questionPane.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
@@ -88,8 +92,7 @@ public class MainFrame extends JFrame {
         questionScrollPane.setViewportView(questionPane);
 
         GroupLayout gl_contentPane = new GroupLayout(contentPane);
-        gl_contentPane.setHorizontalGroup(
-                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+        gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(gl_contentPane.createSequentialGroup()
                         .addGap(10)
                         .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -101,20 +104,19 @@ public class MainFrame extends JFrame {
                                 .addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 1028, Short.MAX_VALUE)
                                 .addGroup(gl_contentPane.createSequentialGroup()
                                         .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                .addComponent(label_1, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(lblQuestion, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(questionScrollPane, GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE))
                                         .addGap(27)
                                         .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                 .addGroup(gl_contentPane.createSequentialGroup()
-                                                        .addComponent(label, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(lblAnswer, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
                                                         .addGap(70))
                                                 .addGroup(gl_contentPane.createSequentialGroup()
                                                         .addComponent(answerScrollPane, GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
                                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)))))
                         .addGap(10))
         );
-        gl_contentPane.setVerticalGroup(
-                gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+        gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(gl_contentPane.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -124,8 +126,8 @@ public class MainFrame extends JFrame {
                         .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 392, GroupLayout.PREFERRED_SIZE)
                         .addGap(11)
                         .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                .addComponent(label_1)
-                                .addComponent(label))
+                                .addComponent(lblQuestion)
+                                .addComponent(lblAnswer))
                         .addGap(11)
                         .addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
                                 .addComponent(answerScrollPane, GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
@@ -136,7 +138,7 @@ public class MainFrame extends JFrame {
     }
 
     public static MainFrame getInstance() {
-        return mainFrame;
+        return instance;
     }
 
 }
