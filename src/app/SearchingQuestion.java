@@ -32,28 +32,22 @@ public class SearchingQuestion implements Magical {
 
         int resultsCount = results.size();
 
-        synchronized (App.ui.table) {
-            // Fullfill table with founded questions
-            UI.setDontDisturbMode(Mode.ON);
-            App.ui.table.notifyAll();
-            App.render.update(results);
-        }
+        // Fullfill table with founded questions
+        UI.setDontDisturbMode(Mode.ON);
+        App.ui.table.notifyAll();
+        App.render.update(results);
 
-        synchronized (App.ui.lblSearch) {
+        String response = (results.isEmpty())
+                ? "По вашему запросу ничего не найдено"
+                : "Найдено: " + resultsCount + " "
+                + root.getCorrectStrEnding(resultsCount,
+                        "результат") + "  (" + time % 60 + " сек.) ";
 
-            String response = (results.isEmpty())
-                    ? "По вашему запросу ничего не найдено"
-                    : "Найдено: " + resultsCount + " "
-                    + root.getCorrectStrEnding(resultsCount,
-                            "результат") + "  (" + time % 60 + " сек.) ";
-
-            App.ui.lblSearch.notify();
-            App.ui.lblSearch.setText(response);
-            try {
-                App.ui.lblSearch.wait();
-            } catch (InterruptedException ex) {
-
-            }
+        App.ui.lblSearch.notify();
+        App.ui.lblSearch.setText(response);
+        try {
+            App.ui.lblSearch.wait();
+        } catch (InterruptedException ex) {
 
         }
 

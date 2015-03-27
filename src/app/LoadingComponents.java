@@ -2,6 +2,7 @@ package app;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import javax.swing.JOptionPane;
 
 /*
@@ -56,7 +57,11 @@ public class LoadingComponents implements Magical {
             try {
                 doc = new QuestionDocument(path);
                 root.loadDocument(doc);
-            } catch (IOException ex) {
+            } catch (IOException | NoSuchElementException ex) {
+                JOptionPane.showMessageDialog(App.ui,
+                        String.format("Ответы на вопросы %s не найдены", doc.getName()),
+                        "Внимание!",
+                        JOptionPane.WARNING_MESSAGE);
             }
 
             current += 2;

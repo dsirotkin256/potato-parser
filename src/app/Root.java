@@ -3,47 +3,41 @@ package app;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Random;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 public class Root extends TreeSet<QuestionDocument> {
 
-    @Override
-    public synchronized boolean add(QuestionDocument e) {
-        return super.add(e); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public static class NoDocumentsFoundException extends Exception {
     }
+
+    private File directory;
+    private ArrayList<File> documents;
+    private TreeSet<Question> questions;
 
     public Root(File directory) throws NoDocumentsFoundException {
         this.questions = new TreeSet<>();
         this.directory = directory;
-        this.documents
-                = new ArrayList<>(FileUtils.listFiles(directory,
-                                new RegexFileFilter(".+(?<!_о).doc"),
-                                DirectoryFileFilter.DIRECTORY));
-        int seeds = new Random().nextInt();
-
-        Collections.shuffle(documents, new Random(seeds));
+        this.documents = new ArrayList<>(
+                FileUtils.listFiles(directory,
+                        new RegexFileFilter(".+(?<!_о).doc"),
+                        DirectoryFileFilter.DIRECTORY));
 
         if (documents.isEmpty()) {
             throw new NoDocumentsFoundException();
         }
     }
 
-    private File directory;
-    private ArrayList<File> documents;
-    private TreeSet<Question> questions;
+    @Override
+    public boolean add(QuestionDocument d) {
+        return super.add(d);
+    }
 
     public ArrayList<File> getDocuments() {
         return documents;
@@ -61,29 +55,20 @@ public class Root extends TreeSet<QuestionDocument> {
      * and set detected answer document to the question that preparing to add into collection
      *
      */
-    void loadDocument(QuestionDocument doc) {
+    public void loadDocument(QuestionDocument doc) throws IOException, NoSuchElementException {
 
-        if (add(doc)) {
-            try {
-                String answerFileName = doc.getName().replace(".doc", "") + ("_о") + (".doc");
+        String answerFileName = doc.getName().replaceFirst("(?=.doc)", "_о");
 
-                LinkedList<File> answer
-                        = new LinkedList<File>(FileUtils.listFiles(directory,
-                                        new RegexFileFilter(answerFileName),
-                                        DirectoryFileFilter.DIRECTORY));
+        LinkedList<File> answer = new LinkedList<>(
+                FileUtils.listFiles(directory,
+                        new RegexFileFilter(answerFileName),
+                        DirectoryFileFilter.DIRECTORY));
 
-                String answerPath = answer.getFirst().getPath();
-                doc.setAnswerDocument(answerPath);
-                doc.extractQuestions();
+        String answerPath = answer.getFirst().getPath();
+        doc.setAnswerDocument(answerPath);
+        doc.extractQuestions();
 
-            } catch (IOException | NoSuchElementException ex) {
-                JOptionPane.showMessageDialog(App.ui,
-                        String.format("Ответы на вопросы %s не найдены", doc.getName()),
-                        "Внимание!",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        }
-
+        add(doc);
     }
 
     /*
@@ -92,7 +77,7 @@ public class Root extends TreeSet<QuestionDocument> {
      *
      *
      */
-    synchronized void updateQuestionList() {
+    public void updateQuestionList() {
         forEach(questionDocument -> {
             questionDocument.getQuestions().forEach(question -> {
                 questions.add(question);
@@ -105,25 +90,14 @@ public class Root extends TreeSet<QuestionDocument> {
      * Extracts unique questions from root folder
      *
      */
-    synchronized LinkedList<Question> extractLoadedQuestions() {
+    public LinkedList<Question> extractLoadedQuestions() {
 
-        TreeSet<Question> questions = new TreeSet<Question>() {
-
-            @Override
-            public boolean add(Question e) {
-                return super.add(e);
-            }
-
-        };
+        TreeSet<Question> questions = new TreeSet<>();
 
         forEach(questionDocument -> {
-
             questionDocument.getQuestions().forEach(question -> {
-
                 questions.add(question);
-
             });
-
         });
 
         return new LinkedList<>(questions);
@@ -134,22 +108,18 @@ public class Root extends TreeSet<QuestionDocument> {
      * This function checks whether question satisfy the condition of search or not
      *
      */
-    boolean isValid(Question question, String creteria) {
-
-        String regex = "(?i).*" + creteria + ".*";
-
+    public boolean isValid(Question question, String creteria) {
+        String regex = String.format("(?i).*{0}.*", creteria);
         Pattern p = Pattern.compile(regex, Pattern.UNICODE_CASE);
-
         Matcher m = p.matcher(question.getQuestion());
 
         return m.matches();
-
     }
 
     /*
      * Notice: valid only for words ending with Russian consonant letter
      */
-    String getCorrectStrEnding(int num, String ofEntity) {
+    public String getCorrectStrEnding(int num, String ofEntity) {
 
         String rcStr = String.valueOf(num);
         int preLastNum;
