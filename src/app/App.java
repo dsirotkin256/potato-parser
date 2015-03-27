@@ -22,8 +22,6 @@ public class App {
 
     public static void main(String[] args) {
 
-        logger.info("Logger Init..");
-
         File directory = getRootDirectory();
         try {
             Root root = new Root(directory);

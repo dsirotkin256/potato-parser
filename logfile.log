@@ -31,3 +31,15 @@
 2015-03-26 18:28:52 INFO  [app.App.main] Logger Init..
 2015-03-26 18:31:33 INFO  [app.App.main] Logger Init..
 2015-03-26 19:08:42 INFO  [app.App.main] Logger Init..
+2015-03-27 11:15:25 INFO  [app.App.main] Logger Init..
+2015-03-27 11:17:21 INFO  [app.App.main] Logger Init..
+2015-03-27 11:22:05 INFO  [app.App.main] Logger Init..
+2015-03-27 11:23:57 INFO  [app.App.Thread-6] 01 min 05 sec
+2015-03-27 11:30:06 DEBUG [app.App.Thread-6] Loading time
+2015-03-27 11:39:09 INFO  [app.App.Thread-6] Loading time
+2015-03-27 11:42:36 INFO  [app.App.Thread-6] Documents: 142 Time: 01 min 54 sec
+2015-03-27 12:05:41 INFO  [app.App.Thread-6] Documents: 142 Time: 01 min 46 sec
+2015-03-27 12:10:57 INFO  [app.App.Thread-6] Documents: 140 Time: 00 min 51 sec
+2015-03-27 12:15:44 INFO  [app.App.Thread-6] Documents: 14 Time: 00 min 10 sec
+2015-03-27 12:31:51 INFO  [app.App.Thread-6] Documents: 142 Time: 00 min 59 sec
+2015-03-27 12:32:57 INFO  [app.App.Thread-6] Documents: 142 Time: 00 min 54 sec

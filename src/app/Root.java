@@ -3,8 +3,10 @@ package app;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +16,11 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 public class Root extends TreeSet<QuestionDocument> {
+
+    @Override
+    public synchronized boolean add(QuestionDocument e) {
+        return super.add(e); //To change body of generated methods, choose Tools | Templates.
+    }
 
     public static class NoDocumentsFoundException extends Exception {
     }
@@ -25,6 +32,8 @@ public class Root extends TreeSet<QuestionDocument> {
                 = new ArrayList<>(FileUtils.listFiles(directory,
                                 new RegexFileFilter(".+(?<!_о).doc"),
                                 DirectoryFileFilter.DIRECTORY));
+        Collections.shuffle(documents, new Random());
+
         if (documents.isEmpty()) {
             throw new NoDocumentsFoundException();
         }
@@ -52,25 +61,25 @@ public class Root extends TreeSet<QuestionDocument> {
      */
     void loadDocument(QuestionDocument doc) {
 
-        try {
-            String answerFileName = doc.getName().replace(".doc", "") + ("_о") + (".doc");
+        if (add(doc)) {
+            try {
+                String answerFileName = doc.getName().replace(".doc", "") + ("_о") + (".doc");
 
-            LinkedList<File> answer
-                    = new LinkedList<File>(FileUtils.listFiles(directory,
-                                    new RegexFileFilter(answerFileName),
-                                    DirectoryFileFilter.DIRECTORY));
+                LinkedList<File> answer
+                        = new LinkedList<File>(FileUtils.listFiles(directory,
+                                        new RegexFileFilter(answerFileName),
+                                        DirectoryFileFilter.DIRECTORY));
 
-            String answerPath = answer.getFirst().getPath();
-            doc.setAnswerDocument(answerPath);
-            doc.extractQuestions();
+                String answerPath = answer.getFirst().getPath();
+                doc.setAnswerDocument(answerPath);
+                doc.extractQuestions();
 
-            add(doc);
-
-        } catch (IOException | NoSuchElementException ex) {
-            JOptionPane.showMessageDialog(App.ui,
-                    String.format("Ответы на вопросы %s не найдены", doc.getName()),
-                    "Внимание!",
-                    JOptionPane.WARNING_MESSAGE);
+            } catch (IOException | NoSuchElementException ex) {
+                JOptionPane.showMessageDialog(App.ui,
+                        String.format("Ответы на вопросы %s не найдены", doc.getName()),
+                        "Внимание!",
+                        JOptionPane.WARNING_MESSAGE);
+            }
         }
 
     }
@@ -81,7 +90,7 @@ public class Root extends TreeSet<QuestionDocument> {
      *
      *
      */
-    void updateQuestionList() {
+    synchronized void updateQuestionList() {
         forEach(questionDocument -> {
             questionDocument.getQuestions().forEach(question -> {
                 questions.add(question);
@@ -94,7 +103,7 @@ public class Root extends TreeSet<QuestionDocument> {
      * Extracts unique questions from root folder
      *
      */
-    LinkedList<Question> extractLoadedQuestions() {
+    synchronized LinkedList<Question> extractLoadedQuestions() {
 
         TreeSet<Question> questions = new TreeSet<>();
 
