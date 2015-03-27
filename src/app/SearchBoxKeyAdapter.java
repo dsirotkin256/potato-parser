@@ -1,6 +1,7 @@
 package app;
 
 import app.ui.MainFrame;
+import app.ui.UI;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -30,7 +31,7 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
 
             if (MainFrame.getInstance().searchBox.getText().isEmpty()) {
                 // Fullfill table with questions from root derectory
-                App.render.update(root.getQuestions());
+                UI.render.update(root.getQuestions());
                 MainFrame.getInstance().lblSearch.setText("");
                 UI.setDontDisturbMode(Mode.OFF);
 

@@ -1,6 +1,7 @@
 package app;
 
 import app.ui.MainFrame;
+import app.ui.UI;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -71,7 +72,7 @@ public class LoadingProcess implements Magical {
             percentage = (short) ((current * 100) / total);
 
             if (UI.getDontDisturbMode() == Mode.OFF) {
-                App.render.update(root.getQuestions());
+                UI.render.update(root.getQuestions());
             }
 
             root.updateQuestionList();

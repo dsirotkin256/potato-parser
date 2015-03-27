@@ -1,6 +1,7 @@
 package app;
 
 import app.ui.MainFrame;
+import app.ui.UI;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class SearchingProcess implements Magical {
 
         // Fullfill table with founded questions
         UI.setDontDisturbMode(Mode.ON);
-        App.render.update(results);
+        UI.render.update(results);
 
         String response = (results.isEmpty())
                 ? "По вашему запросу ничего не найдено"
