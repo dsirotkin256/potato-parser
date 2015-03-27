@@ -38,7 +38,7 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
                 String creteria = App.ui.searchBox.getText();
 
                 // Start Search
-                new SearchingQuestion(creteria, root).doMagic();
+                new SearchingProcess(creteria, root).doMagic();
 
             }
 

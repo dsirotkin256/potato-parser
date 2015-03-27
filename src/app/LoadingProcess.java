@@ -10,9 +10,9 @@ import javax.swing.JOptionPane;
  * This class represents the loading method and it's behaviour
  *
  */
-public class LoadingComponents implements Magical {
+public class LoadingProcess implements Magical {
 
-    Loading loading;
+    LoadingDialog loading;
     ArrayList<Double> times;
     StopWatch time;
     double average = 0.00D;
@@ -24,18 +24,16 @@ public class LoadingComponents implements Magical {
     Root root;
     private static int current = 0;
 
-    public LoadingComponents(Root root) {
+    public LoadingProcess(Root root) {
         this.root = root;
         times = new ArrayList<>();
         App.ui.setVisible(true);
-        loading = new Loading();
+        loading = new LoadingDialog();
         this.pw = new ProgressWorker(this);
     }
 
     @Override
     public void doMagic() {
-
-        App.ui.lblSearch.setText("");
 
         pw.execute();
 
@@ -86,22 +84,17 @@ public class LoadingComponents implements Magical {
             String text;
 
             if (approximateTime >= 60) {
-
                 //Get representaion of approximate time in minutes and seconds
                 text = String.format("%02d мин. %02d сек.",
                         (int) ((approximateTime % 3600) / 60), (int) (approximateTime % 60));
-
             } else {
-
                 text = (int) approximateTime + " сек.";
-
             }
 
-            loading.label.setText(
-                    String.format("До полной загрузки осталось: %s", text));
+            loading.label.setText(String.format(
+                    "Времени осталось до загрузки: %s", text));
 
-            loading.setTitle(String.format("Файлов загружено:  %d из %d",
-                    current, total));
+            loading.setTitle(String.format("Файлов: %d/%d", current, total));
 
         });
         double lt = loadingTime.elapsedTime();
@@ -118,7 +111,7 @@ public class LoadingComponents implements Magical {
 
     }
 
-    public Loading getLoading() {
+    public LoadingDialog getLoading() {
         return loading;
     }
 

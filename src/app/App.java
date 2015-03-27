@@ -24,7 +24,7 @@ public class App {
 
         try {
             Root root = new Root(new File("temp"));
-            new LoadingComponents(root).doMagic();
+            new LoadingProcess(root).doMagic();
             App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
 
         } catch (IllegalArgumentException ex) {

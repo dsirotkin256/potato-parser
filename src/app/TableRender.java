@@ -8,24 +8,21 @@ import javax.swing.table.AbstractTableModel;
 
 public class TableRender extends AbstractTableModel {
 
-    LinkedList<Question> questions;
-    LinkedList<Object[]> tableQuestions;
-
-    SharedSelectionListener listener;
-
+    private LinkedList<Question> questions;
+    private LinkedList<Object[]> tableQuestions;
+    private SharedSelectionListener listener;
     private int row = -1;
     private static Question question;
-
-    String[] sourceColNames = {"№", "Вопрос"};
+    private String[] columnNames = {"№", "Вопрос"};
 
     @Override
     public String getColumnName(int column) {
-        return sourceColNames[column];
+        return columnNames[column];
     }
 
     @Override
     public int getColumnCount() {
-        return sourceColNames.length;
+        return columnNames.length;
     }
 
     @Override
@@ -55,10 +52,7 @@ public class TableRender extends AbstractTableModel {
     }
 
     private Object[] rend(int n, Question question) {
-
-        Object[] tableObject = {n + 1, question.getQuestion()};
-
-        return tableObject;
+        return new Object[]{n + 1, question.getQuestion()};
     }
 
     private void setTableListener(ListSelectionListener listener) {
@@ -83,22 +77,16 @@ public class TableRender extends AbstractTableModel {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-
             row = App.ui.table.getSelectedRow();
 
             if (row != -1) {
-
                 try {
                     question = questions.get(row);
                     question.setPreview();
-
                 } catch (IndexOutOfBoundsException ex) {
                     return;
                 }
             }
-
         }
-
     }
-
 }

@@ -30,27 +30,19 @@ public abstract class Document {
 
     private void setDocument(String path) throws IOException {
         setPath(path);
-
         document = new HWPFDocument(new FileInputStream(path));
         extractor = new WordExtractor(document);
     }
 
     private void setPath(String path) {
         this.path = path;
-        setName();
-    }
-
-    private void setName() {
-
         String[] dirs = path.split(":?\\\\");
         name = dirs[dirs.length - 1];
-
-        this.name = name;
     }
 
     @Override
     public String toString() {
-        return extractor.getText(); //To change body of generated methods, choose Tools | Templates.
+        return extractor.getText();
     }
 
 }

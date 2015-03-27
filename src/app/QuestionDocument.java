@@ -35,13 +35,10 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
                 + ".+?2[.][ \\t]+(?<a2>.+)(r?\n|\r\n)"
                 + ".+?3[.][ \\t]+(?<a3>.+)(r?\n|\r\n)?"
                 + "(?:.+?4[.][ \\t]+(?<a4>.+))?$";
-
         Pattern q = Pattern.compile(regex, Pattern.MULTILINE);
-
         Matcher m = q.matcher(this.toString());
 
         while (m.find()) {
-
             questions.add(new Question() {
                 {
                     setDocName(name.replace(".doc", ""));
@@ -53,9 +50,7 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
                     setLink(m.group("Link"));
                 }
             });
-
         }
-
     }
 
     Pattern getPattern(String questionNumber) {
@@ -111,7 +106,6 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
         regex += ".+(\n|\n\r)?.*";
 
         return Pattern.compile(regex, Pattern.MULTILINE);
-
     }
 
     String extractValue(String qNum, String[] answers) {
@@ -139,18 +133,13 @@ public class QuestionDocument extends Document implements Comparable<QuestionDoc
             answer = Integer.parseInt(numericAnswers.get(value));
 
             return answers[answer - 1];
-
         }
-
         return null;
-
     }
 
     @Override
     public int compareTo(QuestionDocument doc) {
-
         return getName().compareTo(doc.getName());
-
     }
 
 }

@@ -3,6 +3,8 @@ package app;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -10,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
 
-public class Loading extends JFrame {
+public class LoadingDialog extends JFrame {
 
     private JPanel contentPane;
 
@@ -18,9 +20,9 @@ public class Loading extends JFrame {
     public JLabel label;
     public JButton button;
 
-    public Loading() {
+    public LoadingDialog() {
         setResizable(false);
-        setTitle("\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u043A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442\u043E\u0432...");
+        setTitle("Загружаем файлы...");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 495, 183);
         contentPane = new JPanel();
@@ -33,7 +35,7 @@ public class Loading extends JFrame {
         progressBar.setBounds(15, 61, 459, 22);
         progressBar.setForeground(new Color(44, 184, 14));
 
-        label = new JLabel("Идёт расчет времени...");
+        label = new JLabel("Расчитываем время...");
         label.setFont(new Font("Calibri Light", Font.PLAIN, 16));
 
         label.setBounds(15, 28, 400, 22);
@@ -43,6 +45,12 @@ public class Loading extends JFrame {
 
         button.setFont(new Font("Tahoma", Font.PLAIN, 12));
         button.setBounds(198, 109, 92, 34);
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+            }
+        });
         contentPane.add(button);
         contentPane.add(label);
         contentPane.add(progressBar);
