@@ -1,5 +1,6 @@
 package app;
 
+import app.ui.MainFrame;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,6 @@ public class SearchingProcess implements Magical {
 
         // Fullfill table with founded questions
         UI.setDontDisturbMode(Mode.ON);
-        App.ui.table.notifyAll();
         App.render.update(results);
 
         String response = (results.isEmpty())
@@ -43,10 +43,10 @@ public class SearchingProcess implements Magical {
                 + root.getCorrectStrEnding(resultsCount,
                         "результат") + "  (" + time % 60 + " сек.) ";
 
-        App.ui.lblSearch.notify();
-        App.ui.lblSearch.setText(response);
+        MainFrame.getInstance().lblSearch.notify();
+        MainFrame.getInstance().lblSearch.setText(response);
         try {
-            App.ui.lblSearch.wait();
+            MainFrame.getInstance().lblSearch.wait();
         } catch (InterruptedException ex) {
 
         }

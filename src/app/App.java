@@ -1,5 +1,6 @@
 package app;
 
+import app.ui.MainFrame;;
 import java.io.File;
 import java.util.Locale;
 import javax.swing.JFileChooser;
@@ -11,12 +12,10 @@ public class App {
 
     static {
         Locale.setDefault(new Locale("ru"));
-        ui = UI.instance;
         render = new TableRender();
         logger = LogManager.getLogger(App.class.getName());
     }
 
-    public static UI ui;
     public static final TableRender render;
     public static final Logger logger;
 
@@ -25,17 +24,17 @@ public class App {
         try {
             Root root = new Root(new File("temp"));
             new LoadingProcess(root).doMagic();
-            App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
+            MainFrame.getInstance().searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
 
         } catch (IllegalArgumentException ex) {
 
-            JOptionPane.showMessageDialog(App.ui,
+            JOptionPane.showMessageDialog(MainFrame.getInstance(),
                     "Данной папки не существует.",
                     "Ошибка",
                     JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         } catch (Root.NoDocumentsFoundException ex) {
-            JOptionPane.showMessageDialog(App.ui,
+            JOptionPane.showMessageDialog(MainFrame.getInstance(),
                     "Указанная папка не содержит документы НАКС",
                     "Внимание!",
                     JOptionPane.ERROR_MESSAGE);
@@ -53,7 +52,7 @@ public class App {
         dir.setApproveButtonText("Выбрать папку");
         dir.setDialogTitle("Выберите папку с документами НАКС");
 
-        int result = dir.showOpenDialog(App.ui);
+        int result = dir.showOpenDialog(MainFrame.getInstance());
 
         if (result == JFileChooser.APPROVE_OPTION) {
 

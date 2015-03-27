@@ -1,5 +1,7 @@
 package app;
 
+import app.ui.MainFrame;
+
 public class Question implements Comparable<Question> {
 
     private String questionNumber;
@@ -54,11 +56,11 @@ public class Question implements Comparable<Question> {
 
         final String answerHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getAnswer() + "</font><body></html>";
 
-        App.ui.questionPane.setText(questionHTML);
-        App.ui.answerPane.setText(answerHTML);
+        MainFrame.getInstance().questionPane.setText(questionHTML);
+        MainFrame.getInstance().answerPane.setText(answerHTML);
 
-        App.ui.questionPane.setCaretPosition(0);
-        App.ui.answerPane.setCaretPosition(0);
+        MainFrame.getInstance().questionPane.setCaretPosition(0);
+        MainFrame.getInstance().answerPane.setCaretPosition(0);
     }
 
     @Override

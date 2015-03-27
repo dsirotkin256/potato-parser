@@ -1,5 +1,6 @@
 package app;
 
+import app.ui.MainFrame;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -27,15 +28,15 @@ public class SearchBoxKeyAdapter extends KeyAdapter {
             //Interrupt table updates by switching on this mode
             UI.setDontDisturbMode(Mode.ON);
 
-            if (App.ui.searchBox.getText().isEmpty()) {
+            if (MainFrame.getInstance().searchBox.getText().isEmpty()) {
                 // Fullfill table with questions from root derectory
                 App.render.update(root.getQuestions());
-                App.ui.lblSearch.setText("");
+                MainFrame.getInstance().lblSearch.setText("");
                 UI.setDontDisturbMode(Mode.OFF);
 
             } else {
 
-                String creteria = App.ui.searchBox.getText();
+                String creteria = MainFrame.getInstance().searchBox.getText();
 
                 // Start Search
                 new SearchingProcess(creteria, root).doMagic();

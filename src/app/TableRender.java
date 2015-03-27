@@ -1,5 +1,6 @@
 package app;
 
+import app.ui.MainFrame;
 import java.util.Collection;
 import java.util.LinkedList;
 import javax.swing.event.ListSelectionEvent;
@@ -56,11 +57,11 @@ public class TableRender extends AbstractTableModel {
     }
 
     private void setTableListener(ListSelectionListener listener) {
-        App.ui.table.getColumnModel().getColumn(0).setWidth(45);
-        App.ui.table.getColumnModel().getColumn(0).setMinWidth(45);
-        App.ui.table.getColumnModel().getColumn(0).setMaxWidth(45);
+        MainFrame.getInstance().table.getColumnModel().getColumn(0).setWidth(45);
+        MainFrame.getInstance().table.getColumnModel().getColumn(0).setMinWidth(45);
+        MainFrame.getInstance().table.getColumnModel().getColumn(0).setMaxWidth(45);
 
-        App.ui.table.getSelectionModel().addListSelectionListener(listener);
+        MainFrame.getInstance().table.getSelectionModel().addListSelectionListener(listener);
     }
 
     public TableRender() {
@@ -68,7 +69,7 @@ public class TableRender extends AbstractTableModel {
         questions = new LinkedList<>();
         tableQuestions = new LinkedList<>();
 
-        App.ui.table.setModel(this);
+        MainFrame.getInstance().table.setModel(this);
         listener = new SharedSelectionListener();
         setTableListener(listener);
     }
@@ -77,7 +78,7 @@ public class TableRender extends AbstractTableModel {
 
         @Override
         public void valueChanged(ListSelectionEvent e) {
-            row = App.ui.table.getSelectedRow();
+            row = MainFrame.getInstance().table.getSelectedRow();
 
             if (row != -1) {
                 try {

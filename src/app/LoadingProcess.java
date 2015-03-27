@@ -1,5 +1,6 @@
 package app;
 
+import app.ui.MainFrame;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -27,7 +28,7 @@ public class LoadingProcess implements Magical {
     public LoadingProcess(Root root) {
         this.root = root;
         times = new ArrayList<>();
-        App.ui.setVisible(true);
+        MainFrame.getInstance().setVisible(true);
         loading = new LoadingDialog();
         this.pw = new ProgressWorker(this);
     }
@@ -58,7 +59,7 @@ public class LoadingProcess implements Magical {
                 doc = new QuestionDocument(path);
                 root.loadDocument(doc);
             } catch (IOException | NoSuchElementException ex) {
-                JOptionPane.showMessageDialog(App.ui,
+                JOptionPane.showMessageDialog(MainFrame.getInstance(),
                         String.format("Ответы на вопросы %s не найдены", doc.getName()),
                         "Внимание!",
                         JOptionPane.WARNING_MESSAGE);
@@ -102,7 +103,7 @@ public class LoadingProcess implements Magical {
 
         // TO DO add to log file loading time (issue#)
         if (root.isEmpty()) {
-            JOptionPane.showMessageDialog(App.ui, "Данная папка не содержит документы НАКС",
+            JOptionPane.showMessageDialog(MainFrame.getInstance(), "Данная папка не содержит документы НАКС",
                     "Внимание!", JOptionPane.ERROR_MESSAGE);
             Runtime.getRuntime().exit(1);
 
