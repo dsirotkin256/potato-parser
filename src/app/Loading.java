@@ -20,7 +20,7 @@ public class Loading extends JFrame {
 
     public Loading() {
         setResizable(false);
-        setTitle("\u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u043A\u043E\u043C\u043F\u043E\u043D\u0435\u043D\u0442\u043E\u0432...");
+        setTitle("Initialising components...");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 495, 183);
         contentPane = new JPanel();
@@ -33,13 +33,13 @@ public class Loading extends JFrame {
         progressBar.setBounds(15, 61, 459, 22);
         progressBar.setForeground(new Color(44, 184, 14));
 
-        label = new JLabel("Идёт расчет времени...");
+        label = new JLabel("Approximating time left...");
         label.setFont(new Font("Calibri Light", Font.PLAIN, 16));
 
         label.setBounds(15, 28, 400, 22);
         contentPane.setLayout(null);
 
-        button = new JButton("Прервать");
+        button = new JButton("Cancel");
 
         button.setFont(new Font("Tahoma", Font.PLAIN, 12));
         button.setBounds(198, 109, 92, 34);
