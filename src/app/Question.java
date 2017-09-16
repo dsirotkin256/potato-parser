@@ -50,7 +50,7 @@ public class Question implements Comparable<Question> {
 
     public void setPreview() {
 
-        final String questionHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getQuestion() + "</font><br><br><br><font size=\"3\" face=\"verdana\">Документ: <i>" + getDocName() + "</i><br>Вопрос <i>№" + getQuestionNumber() + "</i></font></body></html>";
+        final String questionHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getQuestion() + "</font><br><br><br><font size=\"3\" face=\"verdana\">Doc: <i>" + getDocName() + "</i><br>Question <i>#" + getQuestionNumber() + "</i></font></body></html>";
 
         final String answerHTML = "<!DOCTYPE html><html><body><font size=\"4\" face=\"verdana\">" + getAnswer() + "</font><body></html>";
 
