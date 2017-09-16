@@ -42,7 +42,7 @@ public class UI extends JFrame {
     private UI() {
 
         setLocationRelativeTo(null);
-        setTitle("ReineSoft inc.");
+        setTitle("CodeThoughts, oss");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1074, 635);
         contentPane = new JPanel();
@@ -58,7 +58,7 @@ public class UI extends JFrame {
         });
 
         searchBox.setFont(new Font("Consolas", Font.PLAIN, 15));
-        searchBox.setText("\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0432\u043E\u043F\u0440\u043E\u0441");
+        searchBox.setText("Enter your query:");
         searchBox.setColumns(10);
 
         JScrollPane scrollPane = new JScrollPane();
@@ -71,7 +71,7 @@ public class UI extends JFrame {
 
         scrollPane.setViewportView(table);
 
-        JLabel label = new JLabel("\u041E\u0442\u0432\u0435\u0442");
+        JLabel label = new JLabel("Result");
         label.setFont(new Font("Consolas", Font.PLAIN, 16));
 
         answerScrollPane = new JScrollPane();
@@ -86,7 +86,7 @@ public class UI extends JFrame {
 
         questionScrollPane = new JScrollPane();
 
-        label_1 = new JLabel("\u0412\u043E\u043F\u0440\u043E\u0441");
+        label_1 = new JLabel("Query");
         label_1.setFont(new Font("Consolas", Font.PLAIN, 16));
 
         questionPane = new JEditorPane();
