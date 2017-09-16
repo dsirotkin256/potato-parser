@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<!-- Authors: Chris Taylor, Ceki Gulcu. -->
-
-<!-- Version: 1.2 -->
-
-<!-- A configuration element consists of optional renderer
-elements,appender elements, categories and an optional root
-element. -->
-
 <!ELEMENT log4j:configuration (renderer*, appender*,(category|logger)*,root?,
                                categoryFactory?)>
 
