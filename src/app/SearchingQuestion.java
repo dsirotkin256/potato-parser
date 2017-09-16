@@ -42,10 +42,10 @@ public class SearchingQuestion extends Thread {
         synchronized (App.ui.lblSearch) {
 
             String response = (results.isEmpty())
-                    ? "По вашему запросу ничего не найдено"
-                    : "Найдено: " + resultsCount + " "
+                    ? "Nothing has been found"
+                    : "Found: " + resultsCount + " "
                     + root.getCorrectStrEnding(resultsCount,
-                            "результат") + "  (" + time % 60 + " сек.) ";
+                            "result") + "  (" + time % 60 + " sec.) ";
 
             App.ui.lblSearch.notify();
             App.ui.lblSearch.setText(response);
