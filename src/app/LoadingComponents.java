@@ -136,7 +136,7 @@ public class LoadingComponents extends Thread {
             if (approximateTime >= 60) {
 
                 //Get representaion of approximate time in minutes and seconds
-                text = String.format("%02d мин. %02d сек.",
+                text = String.format("%02d min. %02d sec.",
                         (int) ((approximateTime % 3600) / 60), (int) (approximateTime % 60));
 
             } else {
@@ -146,9 +146,9 @@ public class LoadingComponents extends Thread {
             }
 
             loading.label.setText(
-                    String.format("До полной загрузки осталось: %s", text));
+                    String.format("Time left: %s", text));
 
-            loading.setTitle(String.format("Файлов загружено:  %d из %d",
+            loading.setTitle(String.format("Loaded files:  %d из %d",
                     current, total));
 
         });
@@ -157,8 +157,8 @@ public class LoadingComponents extends Thread {
 
         // TO DO add to log file loading time (issue#)
         if (root.isEmpty()) {
-            JOptionPane.showMessageDialog(App.ui, "Данная папка не содержит документы НАКС",
-                    "Внимание!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(App.ui, "Selected folder doesn't contain NAKS documents",
+                    "Attention!", JOptionPane.ERROR_MESSAGE);
             Runtime.getRuntime().exit(1);
 
         }
