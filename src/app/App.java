@@ -25,21 +25,21 @@ public class App {
         File directory = getRootDirectory();
         try {
             Root root = new Root(directory);
-            new ConcurrentProcessing("Загрузка компонентов",
+            new ConcurrentProcessing("Initialising components",
                     new LoadingComponents(root)).start();
             App.ui.searchBox.addKeyListener(new SearchBoxKeyAdapter(root));
 
         } catch (IllegalArgumentException ex) {
 
             JOptionPane.showMessageDialog(App.ui,
-                    "Данной папки не существует.",
-                    "Ошибка",
+                    "Folder doesn't exist.",
+                    "Error",
                     JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         } catch (Root.NoDocumentsFoundException ex) {
             JOptionPane.showMessageDialog(App.ui,
-                    "Указанная папка не содержит документы НАКС",
-                    "Внимание!",
+                    "Specified folder doesn't contain NAKS documents",
+                    "Attention!",
                     JOptionPane.ERROR_MESSAGE);
 
             main(null);
@@ -52,8 +52,8 @@ public class App {
         JFileChooser dir = new JFileChooser(System.getProperty("user.home") + "\\Desktop");
 
         dir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        dir.setApproveButtonText("Выбрать папку");
-        dir.setDialogTitle("Выберите папку с документами НАКС");
+        dir.setApproveButtonText("Select folder");
+        dir.setDialogTitle("Please, select folder containing NAKS documents");
 
         int result = dir.showOpenDialog(App.ui);
 
