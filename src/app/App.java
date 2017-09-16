@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 public class App {
 
     static {
-        Locale.setDefault(new Locale("ru"));
         ui = UI.instance;
         render = new TableRender();
         logger = LogManager.getLogger(App.class.getName());
